@@ -1,0 +1,27 @@
+{
+  "presets": [
+    "env",
+    "react"
+  ],
+  "plugins": [
+    "transform-class-properties",
+    "transform-object-rest-spread"
+  ],
+  "env": {
+    "production": {
+      "plugins": [
+        [
+          "react-remove-properties",
+          {
+            "properties": [
+              "data-testid"
+            ]
+          }
+        ]
+      ],
+      "ignore": [
+        "src/lib/__tests__/**"
+      ]
+    }
+  }
+}
