@@ -2,8 +2,8 @@
   fontSize: 12,
   color: 'white',
   cursor: 'pointer',
-  background: '#2196f3',
-  border: '1px solid #1a6fb3',
+  //background: '#2196f3',
+  //border: '1px solid #1a6fb3',
   zIndex: 80
 }
 export const selectedStyle = {

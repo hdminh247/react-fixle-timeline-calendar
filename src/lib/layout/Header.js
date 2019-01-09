@@ -51,7 +51,8 @@ class Header extends Component {
     } = this.props
 
     const headerStyle = {
-      top: stickyHeader ? stickyOffset || 0 : 0
+      top: stickyHeader ? stickyOffset || 0 : 0,
+      overflow: 'visible'
     }
 
     const headerClass = stickyHeader ? 'header-sticky' : ''
@@ -59,7 +60,7 @@ class Header extends Component {
     const leftSidebar = leftSidebarHeader && leftSidebarWidth > 0 && (
       <div
         className="rct-sidebar-header"
-        style={{ width: leftSidebarWidth }}
+        style={{ width: leftSidebarWidth, overflow: 'visible' }}
       >
         {leftSidebarHeader}
       </div>
