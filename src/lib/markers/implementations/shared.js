@@ -25,6 +25,6 @@ export const createMarkerStylesWithLeftOffset = leftOffset => ({
 export const createDefaultRenderer = dataTestidValue => {
   // eslint-disable-next-line
   return function DefaultMarkerRenderer({ styles }) {
-    return <div className={'fixle-current-time-line'}><div style={styles} data-testid={dataTestidValue}><div style={{width: '20px', height: '20px', backgroundColor: '#000'}} /></div></div>
+    return <div className={'fixle-current-time-line'}><div style={styles} data-testid={dataTestidValue}><div style={{width: '1px', height: '1px', backgroundColor: '#000'}} /></div></div>
   }
 }
