@@ -240,11 +240,13 @@ $weekend: rgba(250, 246, 225, 0.5);
   .rct-label{
     position: relative;
     $target: 0;
-    $index: $count;
-    @while $index > 0 {
-      &:nth-child(#{$target}){ z-index: #{$index}; }
+    $index: 1;
+    @while $index < $count{
+      &:nth-child(#{$target}){
+        z-index: #{$index};
+      }
       $target: $target + 1;
-      $index: $index - 1;
+      $index: $index + 1;
     }
   }
 }
