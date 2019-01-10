@@ -402,8 +402,8 @@ export function stackItems(
     newGroupOrder
   } = state
   const zoom = visibleTimeEnd - visibleTimeStart
-  const canvasTimeEnd = canvasTimeStart + zoom * 3
-  const canvasWidth = width * 3
+  const canvasTimeEnd = canvasTimeStart + zoom * 3 // x3 the current period
+  const canvasWidth = width * 3 // x3 length of current canvas
 
   // Find items that fit within canvasTimeStart and canvasTimeEnd
   // this is used when calculating the number of 'lines' each group

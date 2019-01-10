@@ -157,7 +157,10 @@ export default class ReactCalendarTimeline extends Component {
 
     verticalLineClassNamesForTime: PropTypes.func,
 
-    children: PropTypes.node
+    children: PropTypes.node,
+
+    firstZoomAllow: PropTypes.bool, // Adjust calendar zoom at the first seen
+    firstZoomRatio: PropTypes.number
   }
 
   static defaultProps = {
@@ -234,7 +237,10 @@ export default class ReactCalendarTimeline extends Component {
     headerLabelFormats: defaultHeaderLabelFormats,
     subHeaderLabelFormats: defaultSubHeaderLabelFormats,
 
-    selected: null
+    selected: null,
+
+    firstZoomAllow: false,
+    firstZoomRatio: 0.7
   }
 
   static childContextTypes = {
@@ -299,7 +305,9 @@ export default class ReactCalendarTimeline extends Component {
       dragGroupTitle: null,
       resizeTime: null,
       resizingItem: null,
-      resizingEdge: null
+      resizingEdge: null,
+
+      zoomInited: false
     }
 
     const { dimensionItems, height, groupHeights, groupTops } = stackItems(
@@ -332,6 +340,14 @@ export default class ReactCalendarTimeline extends Component {
     windowResizeDetector.addListener(this)
 
     this.lastTouchDistance = null
+
+    if(this.props.firstZoomAllow === true){
+      // Set the first zoom
+      this.changeZoom(this.props.firstZoomRatio);
+
+      this.setState({zoomInited: true})
+    }
+
   }
 
   componentWillUnmount() {
@@ -419,6 +435,7 @@ export default class ReactCalendarTimeline extends Component {
 
     let width = containerWidth - props.sidebarWidth - props.rightSidebarWidth
 
+    // Choose, place items in [canvasTimeStart,canvasTimeEnd]
     const { dimensionItems, height, groupHeights, groupTops } = stackItems(
       props.items,
       props.groups,
@@ -503,53 +520,76 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   changeZoom = (scale, offset = 0.5) => {
-    const { minZoom, maxZoom } = this.props
-    const oldZoom = this.state.visibleTimeEnd - this.state.visibleTimeStart
-    const newZoom = Math.min(
-      Math.max(Math.round(oldZoom * scale), minZoom),
-      maxZoom
-    ) // min 1 min, max 20 years
-    const newVisibleTimeStart = Math.round(
-      this.state.visibleTimeStart + (oldZoom - newZoom) * offset
-    )
+    // If this calendar use firstZoom and inited firstZoom already or dont use first zoom
+    if(this.state.zoomInited === false || this.props.firstZoomAllow !== true){
+      const { minZoom, maxZoom } = this.props
+      const oldZoom = this.state.visibleTimeEnd - this.state.visibleTimeStart
 
-    this.props.onTimeChange(
-      newVisibleTimeStart,
-      newVisibleTimeStart + newZoom,
-      this.updateScrollCanvas
-    )
+      let newZoom = 0;
+
+      if(this.props.firstZoomAllow === true){
+        let defaultMinZoom = 60 * 60 * 1000; // 1 hour
+        let defaultMaxZoom = 5 * 365.24 * 86400 * 1000; // 5 years
+
+        newZoom = Math.min(
+          Math.max(Math.round(oldZoom * scale), defaultMinZoom),
+          defaultMaxZoom
+        ) // min 1 min, max 20 years
+
+      }else{
+        newZoom = Math.min(
+          Math.max(Math.round(oldZoom * scale), minZoom),
+          maxZoom
+        ) // min 1 min, max 20 years
+      }
+
+
+
+      const newVisibleTimeStart = Math.round(
+        this.state.visibleTimeStart + (oldZoom - newZoom) * offset
+      )
+
+      this.props.onTimeChange(
+        newVisibleTimeStart,
+        newVisibleTimeStart + newZoom,
+        this.updateScrollCanvas
+      )
+    }
   }
 
   showPeriod = (from, unit) => {
-    let visibleTimeStart = from.valueOf()
-    let visibleTimeEnd = moment(from)
-      .add(1, unit)
-      .valueOf()
-    let zoom = visibleTimeEnd - visibleTimeStart
+    // Only use this feature on non-first zoom allow calendar
+    if(this.props.firstZoomAllow !== true){
+      let visibleTimeStart = from.valueOf()
+      let visibleTimeEnd = moment(from)
+        .add(1, unit)
+        .valueOf()
+      let zoom = visibleTimeEnd - visibleTimeStart
 
-    // can't zoom in more than to show one hour
-    if (zoom < 360000) {
-      return
+      // can't zoom in more than to show one hour
+      if (zoom < 360000) {
+        return
+      }
+
+      // clicked on the big header and already focused here, zoom out
+      if (
+        unit !== 'year' &&
+        this.state.visibleTimeStart === visibleTimeStart &&
+        this.state.visibleTimeEnd === visibleTimeEnd
+      ) {
+        let nextUnit = getNextUnit(unit)
+
+        visibleTimeStart = from.startOf(nextUnit).valueOf()
+        visibleTimeEnd = moment(visibleTimeStart).add(1, nextUnit)
+        zoom = visibleTimeEnd - visibleTimeStart
+      }
+
+      this.props.onTimeChange(
+        visibleTimeStart,
+        visibleTimeStart + zoom,
+        this.updateScrollCanvas
+      )
     }
-
-    // clicked on the big header and already focused here, zoom out
-    if (
-      unit !== 'year' &&
-      this.state.visibleTimeStart === visibleTimeStart &&
-      this.state.visibleTimeEnd === visibleTimeEnd
-    ) {
-      let nextUnit = getNextUnit(unit)
-
-      visibleTimeStart = from.startOf(nextUnit).valueOf()
-      visibleTimeEnd = moment(visibleTimeStart).add(1, nextUnit)
-      zoom = visibleTimeEnd - visibleTimeStart
-    }
-
-    this.props.onTimeChange(
-      visibleTimeStart,
-      visibleTimeStart + zoom,
-      this.updateScrollCanvas
-    )
   }
 
   selectItem = (item, clickType, e) => {

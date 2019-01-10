@@ -233,3 +233,23 @@ $weekend: rgba(250, 246, 225, 0.5);
 .fixle-period-text{
   font-size: 9px;
 }
+
+@mixin descending-z-index($count: 100){
+  // @include on UL class
+  position: relative;
+  .rct-label{
+    position: relative;
+    $target: 0;
+    $index: $count;
+    @while $index > 0 {
+      &:nth-child(#{$target}){ z-index: #{$index}; }
+      $target: $target + 1;
+      $index: $index - 1;
+    }
+  }
+}
+
+.rct-bottom-header{
+  @include descending-z-index;
+  //other styles here
+}
