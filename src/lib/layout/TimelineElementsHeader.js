@@ -214,7 +214,7 @@ export default class TimelineElementsHeader extends Component {
               lineHeight: '16px',
               borderLeft: 'none',
               backgroundColor: '#fff',
-              borderTop: '1px solid #bbb;'
+              borderTop: '1px solid #bbb'
             }}
           >
             <div style={{position: 'absolute', left: -8}}><span className={'fixle-time-title'}>{fixleTime.split(' ')[0]}</span><br/> <span className={'fixle-period-text'}>{fixleTime.split(' ')[1]}</span></div>
