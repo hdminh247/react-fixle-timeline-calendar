@@ -360,3 +360,28 @@
       z-index: 98; }
     .rct-bottom-header .rct-label:nth-child(98) {
       z-index: 99; }
+
+.item-timeline {
+  line-height: 1;
+  height: 100%; }
+  .item-timeline .item-timeline-content .img-timeline {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    overflow: hidden;
+    margin-top: 10px;
+    border-radius: 50%; }
+  .item-timeline .item-timeline-content .timeline-noti {
+    position: absolute;
+    top: 14px;
+    left: 36px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #f65b58;
+    font-size: 9px;
+    line-height: 1.56;
+    letter-spacing: 1.3px;
+    color: #fff;
+    padding: 1px 5px; }

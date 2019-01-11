@@ -334,7 +334,7 @@ export function nostack(items, groupOrders, lineHeight, groups) {
     // calculate new, non-overlapping positions
     groupTops.push(totalHeight)
 
-    var groupHeight = 0
+    var groupHeight = 57
     for (i = 0, iMax = group.length; i < iMax; i++) {
       var item = group[i]
       var verticalMargin = (lineHeight - item.dimensions.height) / 2
