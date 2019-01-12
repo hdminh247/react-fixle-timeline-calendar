@@ -35,7 +35,7 @@ class ScrollElement extends Component {
   handleWheel = e => {
     const { traditionalZoom } = this.props
 
-    
+
 
     // zoom in the time dimension
     if (e.ctrlKey || e.metaKey || e.altKey) {
@@ -73,6 +73,10 @@ class ScrollElement extends Component {
       this.scrollComponent.scrollLeft += this.dragLastPosition - e.pageX
       this.dragLastPosition = e.pageX
     }
+  }
+
+  onDragStart = e => {
+    e.preventDefault();
   }
 
   handleMouseUp = () => {
@@ -188,6 +192,7 @@ class ScrollElement extends Component {
         onTouchStart={this.handleTouchStart}
         onTouchMove={this.handleTouchMove}
         onTouchEnd={this.handleTouchEnd}
+        onDragStart={this.onDragStart}
       >
         {children}
       </div>
