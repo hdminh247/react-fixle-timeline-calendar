@@ -336,7 +336,8 @@ export default class ReactCalendarTimeline extends Component {
 
   // Force update calendar
   forceUpdateCalendar = () => {
-    this.resize();
+    console.log('force update')
+    this.forceUpdate();
   };
 
   componentDidMount() {
