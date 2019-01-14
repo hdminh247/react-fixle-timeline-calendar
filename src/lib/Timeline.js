@@ -974,6 +974,7 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   render() {
+    console.log('Timeline rendered')
     const {
       items,
       groups,
