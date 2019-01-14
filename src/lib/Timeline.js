@@ -328,7 +328,16 @@ export default class ReactCalendarTimeline extends Component {
     this.state.groupTops = groupTops
 
     /* eslint-enable */
+
+    // Add listener event, this is a bit hack because calendar cant update correctly
+
+    document.addEventListener('calendarUpdate', this.forceUpdateCalendar, false);
   }
+
+  // Force update calendar
+  forceUpdateCalendar = () => {
+    this.resize();
+  };
 
   componentDidMount() {
     this.resize(this.props)
@@ -356,6 +365,9 @@ export default class ReactCalendarTimeline extends Component {
     }
 
     windowResizeDetector.removeListener(this)
+
+    // Remove listener
+    document.removeEventListener('calendarUpdate', this.forceUpdateCalendar, false);
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
