@@ -365,6 +365,7 @@ export function nostack(items, groupOrders, lineHeight, groups) {
  * within the canvas area
  * @param {item[]} items
  * @param {group[]} groups
+ * @params{groupExtendInfoList[]} groupExtendInfoList
  * @param {number} canvasTimeStart
  * @param {number} visibleTimeStart
  * @param {number} visibleTimeEnd
@@ -375,6 +376,7 @@ export function nostack(items, groupOrders, lineHeight, groups) {
 export function stackItems(
   items,
   groups,
+  groupExtendInfoList,
   canvasTimeStart,
   visibleTimeStart,
   visibleTimeEnd,
@@ -486,6 +488,7 @@ export function calculateScrollCanvas(
   forceUpdateDimensions,
   items,
   groups,
+  groupExtendInfoList,
   props,
   state
 ) {
@@ -511,6 +514,7 @@ export function calculateScrollCanvas(
       stackItems(
         items,
         groups,
+        groupExtendInfoList,
         newState.canvasTimeStart,
         visibleTimeStart,
         visibleTimeEnd,

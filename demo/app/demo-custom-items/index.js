@@ -53,11 +53,17 @@ export default class App extends Component {
       .add(1, 'day')
       .toDate()
 
+    const groupExtendInfoList = [{data: 'Test'}]
+
+    const key = 1;
+
     this.state = {
       groups,
+      groupExtendInfoList,
       items,
       defaultTimeStart,
-      defaultTimeEnd
+      defaultTimeEnd,
+      key
     }
   }
 
@@ -196,20 +202,33 @@ export default class App extends Component {
     )
   }
 
-  // groupRenderer = ({ group }) => {
-  //   return (
-  //     <div className='custom-group'>
-  //       {group.title}
-  //     </div>
-  //   )
-  // }
+  groupRenderer = ({ group, groupExtendInfoList }) => {
+    console.log('group Renderer')
+    return (
+      <div className='custom-group'>
+        {JSON.stringify(groupExtendInfoList)}
+        <button onClick={()=>{
+          this.setState({key: 2})
+
+          console.log('setState')
+        }}>Test</button>
+      </div>
+    )
+  }
+
+  componentDidMount(){
+
+  }
 
   render() {
-    const { groups, items, defaultTimeStart, defaultTimeEnd } = this.state
-    console.log("render")
+    const { groups, groupExtendInfoList, items, defaultTimeStart, defaultTimeEnd } = this.state
+
+    console.log(groupExtendInfoList)
     return (
       <Timeline
+        key={this.state.key}
         groups={groups}
+        groupExtendInfoList={groupExtendInfoList}
         items={items}
         keys={keys}
         sidebarWidth={150}
@@ -217,33 +236,25 @@ export default class App extends Component {
         // rightSidebarWidth={150}
         // rightSidebarContent={<div>Above The Right</div>}
 
-        canMove
-        canResize="right"
-        canSelect
-        itemsSorted
         itemTouchSendsClick={false}
-        stackItems
-        itemHeightRatio={0.75}
-        lineHeight={40}
         showCursorLine
         // resizeDetector={containerResizeDetector}
 
         defaultTimeStart={defaultTimeStart}
         defaultTimeEnd={defaultTimeEnd}
         itemRenderer={this.itemRenderer}
-        // groupRenderer={this.groupRenderer}
+        groupRenderer={this.groupRenderer}
 
-        onCanvasClick={this.handleCanvasClick}
-        onCanvasContextMenu={this.handleCanvasContextMenu}
-        onItemClick={this.handleItemClick}
         onItemSelect={this.handleItemSelect}
-        onItemContextMenu={this.handleItemContextMenu}
-        onItemMove={this.handleItemMove}
-        onItemResize={this.handleItemResize}
-        onItemDoubleClick={this.handleItemDoubleClick}
         onTimeChange={this.handleTimeChange}
-        moveResizeValidator={this.moveResizeValidator}
         subHeaderLabelFormats={usSubHeaderLabelFormats}
+
+        minZoom={24*60*60*1000}
+        maxZoom={24*60*60*1000}
+        lineHeight={50}
+        itemHeightRatio={0.85}
+        firstZoomAllow={true}
+        firstZoomRatio={0.6}
       >
         <TodayMarker interval={10000}/>
       </Timeline>

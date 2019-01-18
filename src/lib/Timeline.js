@@ -160,7 +160,9 @@ export default class ReactCalendarTimeline extends Component {
     children: PropTypes.node,
 
     firstZoomAllow: PropTypes.bool, // Adjust calendar zoom at the first seen
-    firstZoomRatio: PropTypes.number
+    firstZoomRatio: PropTypes.number,
+
+    groupExtendInfoList: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   }
 
   static defaultProps = {
@@ -275,6 +277,7 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   constructor(props) {
+    console.log('INIT')
     super(props)
 
     let visibleTimeStart = null
@@ -313,6 +316,7 @@ export default class ReactCalendarTimeline extends Component {
     const { dimensionItems, height, groupHeights, groupTops } = stackItems(
       props.items,
       props.groups,
+      props.groupExtendInfoList,
       this.state.canvasTimeStart,
       this.state.visibleTimeStart,
       this.state.visibleTimeEnd,
@@ -365,15 +369,16 @@ export default class ReactCalendarTimeline extends Component {
       visibleTimeStart,
       visibleTimeEnd,
       items,
-      groups
+      groups,
+      groupExtendInfoList,
     } = nextProps
 
     // This is a gross hack pushing items and groups in to state only to allow
     // For the forceUpdate check
-    let derivedState = {items, groups}
+    let derivedState = {items, groups, groupExtendInfoList}
 
     // if the items or groups have changed we must re-render
-    const forceUpdate = items !== prevState.items || groups !== prevState.groups
+    const forceUpdate = items !== prevState.items || groups !== prevState.groups || groupExtendInfoList !== prevState.groupExtendInfoList
 
     // We are a controlled component
     if (visibleTimeStart && visibleTimeEnd) {
@@ -385,14 +390,17 @@ export default class ReactCalendarTimeline extends Component {
           forceUpdate,
           items,
           groups,
+          groupExtendInfoList,
           nextProps,
           prevState
       ))
     } else if (forceUpdate) {
+      console.log('force update')
       // Calculate new item stack position as canvas may have changed
       Object.assign(derivedState, 
         stackItems(items, 
-          groups, 
+          groups,
+          groupExtendInfoList,
           prevState.canvasTimeStart,
           prevState.visibleTimeStart,
           prevState.visibleTimeEnd,
@@ -441,6 +449,7 @@ export default class ReactCalendarTimeline extends Component {
     const { dimensionItems, height, groupHeights, groupTops } = stackItems(
       props.items,
       props.groups,
+      props.groupExtendInfoList,
       this.state.canvasTimeStart,
       this.state.visibleTimeStart,
       this.state.visibleTimeEnd,
@@ -504,7 +513,8 @@ export default class ReactCalendarTimeline extends Component {
     visibleTimeEnd,
     forceUpdateDimensions,
     items = this.props.items,
-    groups = this.props.groups
+    groups = this.props.groups,
+    groupExtendInfoList = this.props.groupExtendInfoList
   ) => {
     this.setState(
       calculateScrollCanvas(
@@ -512,7 +522,8 @@ export default class ReactCalendarTimeline extends Component {
         visibleTimeEnd, 
         forceUpdateDimensions, 
         items, 
-        groups, 
+        groups,
+        groupExtendInfoList,
         this.props, 
         this.state))
   }
@@ -898,6 +909,7 @@ export default class ReactCalendarTimeline extends Component {
       sidebarWidth && 
       <Sidebar
         groups={this.props.groups}
+        groupExtendInfoList={this.props.groupExtendInfoList}
         groupRenderer={this.props.groupRenderer}
         keys={this.props.keys}
         width={sidebarWidth}
@@ -914,6 +926,7 @@ export default class ReactCalendarTimeline extends Component {
       rightSidebarWidth &&
       <Sidebar
         groups={this.props.groups}
+        groupExtendInfoList={this.props.groupExtendInfoList}
         keys={this.props.keys}
         groupRenderer={this.props.groupRenderer}
         isRightSidebar
@@ -979,6 +992,7 @@ export default class ReactCalendarTimeline extends Component {
     const {
       items,
       groups,
+      groupExtendInfoList,
       headerLabelGroupHeight,
       headerLabelHeight,
       sidebarWidth,
@@ -1008,6 +1022,7 @@ export default class ReactCalendarTimeline extends Component {
       const stackResults = stackItems(
         items,
         groups,
+        groupExtendInfoList,
         canvasTimeStart,
         visibleTimeStart,
         visibleTimeEnd,

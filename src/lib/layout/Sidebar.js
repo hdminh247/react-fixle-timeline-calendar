@@ -6,6 +6,7 @@ import { _get, arraysEqual } from '../utility/generic'
 export default class Sidebar extends Component {
   static propTypes = {
     groups: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
+    groupExtendInfoList: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     groupHeights: PropTypes.array.isRequired,
@@ -24,19 +25,22 @@ export default class Sidebar extends Component {
     )
   }
 
-  renderGroupContent(group, isRightSidebar, groupTitleKey, groupRightTitleKey) {
+  renderGroupContent(group, groupExtendInfoList, isRightSidebar, groupTitleKey, groupRightTitleKey) {
+    console.log('renderGroupContent')
     if (this.props.groupRenderer) {
       return React.createElement(this.props.groupRenderer, {
         group,
+        groupExtendInfoList,
         isRightSidebar
       })
     } else {
-      return _get(group, isRightSidebar ? groupRightTitleKey : groupTitleKey)
+      return _get(group, groupExtendInfoList, isRightSidebar ? groupRightTitleKey : groupTitleKey)
     }
   }
 
   render() {
-    const { width, groupHeights, height, isRightSidebar } = this.props
+    console.log('re-render')
+    const { width, groupHeights, height, isRightSidebar, groupExtendInfoList } = this.props
 
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -66,6 +70,7 @@ export default class Sidebar extends Component {
         >
           {this.renderGroupContent(
             group,
+            groupExtendInfoList,
             isRightSidebar,
             groupTitleKey,
             groupRightTitleKey
