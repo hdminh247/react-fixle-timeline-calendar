@@ -20,6 +20,21 @@ var keys = {
   itemTimeStartKey: 'start',
   itemTimeEndKey: 'end'
 }
+const usHeaderLabelFormats = Object.assign({}, defaultSubHeaderLabelFormats, {
+  yearShort: 'YY',
+  yearLong: 'YYYY',
+  monthShort: 'MM/YY',
+  monthMedium: 'MM/YYYY',
+  monthMediumLong: 'MMM YYYY',
+  monthLong: 'MMMM YYYY',
+  dayShort: 'L',
+  dayLong: 'dddd, LL',
+  time: 'LLL',
+  hourShort: 'hh A',
+  hourMedium: 'hh A',
+  hourMediumLong: 'h A',
+  hourLong: 'dddd, LL, h A'
+});
 
 const usSubHeaderLabelFormats = Object.assign(
   {},
@@ -52,76 +67,15 @@ export default class App extends Component {
       .startOf('day')
       .add(1, 'day')
       .toDate()
+    const id = 1;
 
     this.state = {
       groups,
       items,
       defaultTimeStart,
-      defaultTimeEnd
+      defaultTimeEnd,
+      id
     }
-  }
-
-  handleCanvasClick = (groupId, time, event) => {
-    console.log('Canvas clicked', groupId, moment(time).format())
-  }
-
-  handleCanvasContextMenu = (group, time, e) => {
-    console.log('Canvas context menu', group, moment(time).format())
-  }
-
-  handleItemClick = (itemId, _, time) => {
-    console.log('Clicked: ' + itemId, moment(time).format())
-  }
-
-  handleItemSelect = (itemId, _, time) => {
-    console.log('Selected: ' + itemId, moment(time).format())
-  }
-
-  handleItemDoubleClick = (itemId, _, time) => {
-    console.log('Double Click: ' + itemId, moment(time).format())
-  }
-
-  handleItemContextMenu = (itemId, _, time) => {
-    console.log('Context Menu: ' + itemId, moment(time).format())
-  }
-
-  handleItemMove = (itemId, dragTime, newGroupOrder) => {
-    const { items, groups } = this.state
-
-    const group = groups[newGroupOrder]
-
-    this.setState({
-      items: items.map(
-        item =>
-          item.id === itemId
-            ? Object.assign({}, item, {
-              start: dragTime,
-              end: dragTime + (item.end - item.start),
-              group: group.id
-            })
-            : item
-      )
-    })
-
-    console.log('Moved', itemId, dragTime, newGroupOrder)
-  }
-
-  handleItemResize = (itemId, time, edge) => {
-    const { items } = this.state
-
-    this.setState({
-      items: items.map(
-        item =>
-          item.id === itemId
-            ? Object.assign({}, item, {
-              start: edge === 'left' ? time : item.start,
-              end: edge === 'left' ? item.end : time
-            })
-            : item
-      )
-    })
-
-    console.log('Resized', itemId, time, edge)
   }
 
   // this limits the timeline to -6 months ... +6 months
@@ -135,16 +89,6 @@ export default class App extends Component {
     } else {
       updateScrollCanvas(visibleTimeStart, visibleTimeEnd)
     }
-  }
-
-  moveResizeValidator = (action, item, time, resizeEdge) => {
-    if (time < new Date().getTime()) {
-      var newTime =
-        Math.ceil(new Date().getTime() / (15 * 60 * 1000)) * (15 * 60 * 1000)
-      return newTime
-    }
-
-    return time
   }
 
   itemRenderer = ({
@@ -196,54 +140,48 @@ export default class App extends Component {
     )
   }
 
-  // groupRenderer = ({ group }) => {
-  //   return (
-  //     <div className='custom-group'>
-  //       {group.title}
-  //     </div>
-  //   )
-  // }
+  groupRenderer = ({ group }) => {
+    return (
+      <table>
+        <tbody>
+        <tr>
+          <td>{group.title}</td>
+          <td><button onClick={()=>{this.setState({id: 2})}}>test</button></td>
+        </tr>
+        </tbody>
+      </table>
+    )
+  }
 
   render() {
-    const { groups, items, defaultTimeStart, defaultTimeEnd } = this.state
-    console.log("render")
+    const { groups, items, defaultTimeStart, defaultTimeEnd, id } = this.state
+    console.log(id)
     return (
       <Timeline
+        key={id}
         groups={groups}
         items={items}
+        groupRenderer = {this.groupRenderer}
+        itemRenderer = {this.itemRenderer}
         keys={keys}
-        sidebarWidth={150}
-        sidebarContent={<div>Above The Left</div>}
-        // rightSidebarWidth={150}
-        // rightSidebarContent={<div>Above The Right</div>}
-
-        canMove
-        canResize="right"
-        canSelect
+        sidebarWidth={290}
+        sidebarContent={()=>{return <div>ts</div>}}
         itemsSorted
-        itemTouchSendsClick={false}
-        stackItems
-        itemHeightRatio={0.75}
-        lineHeight={40}
+        itemTouchSendsClick={true}
         showCursorLine
-        // resizeDetector={containerResizeDetector}
-
+        canMove={false}
+        canResize={false}
         defaultTimeStart={defaultTimeStart}
         defaultTimeEnd={defaultTimeEnd}
-        itemRenderer={this.itemRenderer}
-        // groupRenderer={this.groupRenderer}
-
-        onCanvasClick={this.handleCanvasClick}
-        onCanvasContextMenu={this.handleCanvasContextMenu}
-        onItemClick={this.handleItemClick}
-        onItemSelect={this.handleItemSelect}
-        onItemContextMenu={this.handleItemContextMenu}
-        onItemMove={this.handleItemMove}
-        onItemResize={this.handleItemResize}
-        onItemDoubleClick={this.handleItemDoubleClick}
-        onTimeChange={this.handleTimeChange}
-        moveResizeValidator={this.moveResizeValidator}
+        headerLabelFormats={usHeaderLabelFormats}
         subHeaderLabelFormats={usSubHeaderLabelFormats}
+        minZoom={24*60*60*1000}
+        maxZoom={24*60*60*1000}
+        onTimeChange={this.handleTimeChange}
+        lineHeight={50}
+        itemHeightRatio={0.85}
+        firstZoomAllow={true}
+        firstZoomRatio={0.6}
       >
         <TodayMarker interval={10000}/>
       </Timeline>
